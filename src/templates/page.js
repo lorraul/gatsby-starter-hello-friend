@@ -45,8 +45,8 @@ BlogPostTemplate.propTypes = {
 }
 
 export const pageQuery = graphql`
-  query($path: String) {
-    markdownRemark(frontmatter: { path: { eq: $path } }) {
+  query($slug: String!) {
+    markdownRemark(fields: { slug: { eq: $slug }} ) {
       frontmatter {
         title
         date(formatString: "DD MMMM YYYY")

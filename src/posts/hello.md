@@ -1,6 +1,5 @@
 ---
 title: "Hello Friend"
-path: "/hello"
 date: "2019-01-17"
 coverImage: "../images/hello.jpg"
 author: "Elliot"

@@ -2,6 +2,7 @@ const { paginate } = require('gatsby-awesome-pagination')
 const { forEach, uniq, filter, not, isNil, flatMap } = require('rambdax')
 const path = require('path')
 const { toKebabCase } = require('./src/helpers')
+const { createFilePath } = require(`gatsby-source-filesystem`)
 
 const pageTypeRegex = /src\/(.*?)\//
 const getType = node => node.fileAbsolutePath.match(pageTypeRegex)[1]
@@ -22,6 +23,9 @@ exports.createPages = ({ actions, graphql, getNodes }) => {
       ) {
         edges {
           node {
+			fields {
+              slug
+            }
             frontmatter {
               path
               title
@@ -79,12 +83,13 @@ exports.createPages = ({ actions, graphql, getNodes }) => {
         getType(node) === (previous && getType(previous))
 
       createPage({
-        path: node.frontmatter.path,
+        path: node.fields.slug,
         component: pageTemplate,
         context: {
           type: getType(node),
           next: isNextSameType ? next : null,
           previous: isPreviousSameType ? previous : null,
+		  slug: node.fields.slug,
         },
       })
     }, sortedPages)
@@ -131,11 +136,24 @@ exports.sourceNodes = ({ actions }) => {
       title: String!
       author: String
       date: Date! @dateformat
-      path: String!
+      path: String
       tags: [String!]
       excerpt: String
       coverImage: File @fileByRelativePath
     }
   `
   createTypes(typeDefs)
+}
+
+exports.onCreateNode = ({ node, actions, getNode }) => {
+  const { createNodeField } = actions
+
+  if (node.internal.type === `MarkdownRemark`) {
+    const value = createFilePath({ node, getNode, trailingSlash: false })
+    createNodeField({
+      name: `slug`,
+      node,
+      value,
+    })
+  }
 }

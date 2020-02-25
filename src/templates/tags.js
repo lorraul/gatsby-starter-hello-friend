@@ -31,12 +31,14 @@ const Tags = ({
             frontmatter: {
               title,
               date,
-              path,
               author,
               coverImage,
               excerpt,
               tags,
             },
+			fields: {
+				slug
+			}
           } = node
 
           return (
@@ -44,7 +46,7 @@ const Tags = ({
               key={id}
               title={title}
               date={date}
-              path={path}
+              slug={slug}
               author={author}
               tags={tags}
               coverImage={coverImage}
@@ -87,7 +89,6 @@ export const postsQuery = graphql`
           frontmatter {
             title
             date(formatString: "DD MMMM YYYY")
-            path
             author
             excerpt
             tags
@@ -98,6 +99,9 @@ export const postsQuery = graphql`
                 }
               }
             }
+          }
+		  fields {
+            slug
           }
         }
       }
